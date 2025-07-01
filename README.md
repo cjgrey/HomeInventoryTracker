@@ -1,5 +1,4 @@
 # 🏠 HomeInventoryTracker
-
 A simple inventory tracker app built to run on iOS (iPhone/iPad) and desktop, created by @cjgrey.
 
 ## 🚀 Features
@@ -14,4 +13,5 @@ A simple inventory tracker app built to run on iOS (iPhone/iPad) and desktop, cr
    ```bash
    git clone git@github.com:cjgrey/HomeInventoryTracker.git
    cd HomeInventoryTracker
+
 
