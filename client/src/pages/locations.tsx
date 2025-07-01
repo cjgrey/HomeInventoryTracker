@@ -42,25 +42,29 @@ export default function Locations() {
 
   const createLocationMutation = useMutation({
     mutationFn: async (data: { name: string; parentId: number | null }) => {
-      const parent = data.parentId ? locations.find(l => l.id === data.parentId) : null;
-      const path = parent ? `${parent.path}/${data.name}` : data.name;
-      
-      return apiRequest('POST', '/api/locations', {
-        name: data.name,
-        parentId: data.parentId,
-        path,
-      });
-    },
+  const parent = data.parentId ? locations.find(l => l.id === data.parentId) : null;
+  const path = parent ? `${parent.path}/${data.name}` : data.name;
+
+  return apiRequest('/api/locations', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: data.name,
+      parentId: data.parentId,
+      path,
+    }),
+  });
+},
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/locations'] });
-      setIsAddDialogOpen(false);
-      setNewLocationName("");
-      setSelectedParentId(null);
-      toast({
-        title: "Location created",
-        description: "Your new location has been added successfully.",
-      });
-    },
+  console.log('Location created, invalidating cache');
+  queryClient.invalidateQueries({ queryKey: ['/api/locations'] });
+  setIsAddDialogOpen(false);
+  setNewLocationName("");
+  setSelectedParentId(null);
+  toast({
+    title: "Location created",
+    description: "Your new location has been added successfully.",
+  });
+},
     onError: () => {
       toast({
         title: "Error",
