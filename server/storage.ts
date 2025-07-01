@@ -68,8 +68,13 @@ export interface IStorage {
 export class DatabaseStorage implements IStorage {
   // Locations
   async getLocations(): Promise<Location[]> {
+  try {
     return await db.select().from(locations);
+  } catch (error) {
+    console.error("Error in getLocations:", error);
+    throw error;  // keep throwing so your route handles it
   }
+}
 
   async getLocation(id: number): Promise<Location | undefined> {
     const result = await db.select().from(locations).where(eq(locations.id, id));
