@@ -5,14 +5,15 @@ import {
   Package, 
   MapPin, 
   BarChart3, 
-  Settings 
+  Settings,
+  Share2
 } from "lucide-react";
 
 const navItems = [
   { path: "/", icon: Home, label: "Home" },
   { path: "/inventory", icon: Package, label: "Inventory" },
   { path: "/locations", icon: MapPin, label: "Locations" },
-  { path: "/reports", icon: BarChart3, label: "Reports" },
+  { path: "/shareable-lists", icon: Share2, label: "Share" },
   { path: "/settings", icon: Settings, label: "Settings" },
 ];
 

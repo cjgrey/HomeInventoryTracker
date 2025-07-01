@@ -240,6 +240,116 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Shareable Lists API
+  app.get('/api/shareable-lists', async (req, res) => {
+    try {
+      const lists = await storage.getShareableLists();
+      res.json(lists);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch shareable lists' });
+    }
+  });
+
+  app.get('/api/shareable-lists/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const list = await storage.getShareableList(id);
+      if (!list) {
+        return res.status(404).json({ message: 'Shareable list not found' });
+      }
+      res.json(list);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch shareable list' });
+    }
+  });
+
+  app.get('/api/share/:shareId', async (req, res) => {
+    try {
+      const shareId = req.params.shareId;
+      const list = await storage.getShareableListByShareId(shareId);
+      if (!list) {
+        return res.status(404).json({ message: 'Shared list not found' });
+      }
+      
+      const listItems = await storage.getShareableListItems(list.id);
+      res.json({ list, items: listItems });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch shared list' });
+    }
+  });
+
+  app.post('/api/shareable-lists', async (req, res) => {
+    try {
+      const listData = req.body;
+      const list = await storage.createShareableList(listData);
+      res.status(201).json(list);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to create shareable list' });
+    }
+  });
+
+  app.put('/api/shareable-lists/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const listData = req.body;
+      const list = await storage.updateShareableList(id, listData);
+      if (!list) {
+        return res.status(404).json({ message: 'Shareable list not found' });
+      }
+      res.json(list);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to update shareable list' });
+    }
+  });
+
+  app.delete('/api/shareable-lists/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteShareableList(id);
+      if (!success) {
+        return res.status(404).json({ message: 'Shareable list not found' });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to delete shareable list' });
+    }
+  });
+
+  app.get('/api/shareable-lists/:id/items', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const items = await storage.getShareableListItems(id);
+      res.json(items);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch list items' });
+    }
+  });
+
+  app.post('/api/shareable-lists/:id/items', async (req, res) => {
+    try {
+      const listId = parseInt(req.params.id);
+      const { itemId } = req.body;
+      const listItem = await storage.addItemToShareableList({ listId, itemId });
+      res.status(201).json(listItem);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to add item to list' });
+    }
+  });
+
+  app.delete('/api/shareable-lists/:id/items/:itemId', async (req, res) => {
+    try {
+      const listId = parseInt(req.params.id);
+      const itemId = parseInt(req.params.itemId);
+      const success = await storage.removeItemFromShareableList(listId, itemId);
+      if (!success) {
+        return res.status(404).json({ message: 'Item not found in list' });
+      }
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to remove item from list' });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
