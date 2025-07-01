@@ -82,9 +82,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createLocation(location: InsertLocation): Promise<Location> {
+  try {
+    console.log("Inserting location:", location);
     const [newLocation] = await db.insert(locations).values(location).returning();
+    console.log("Inserted new location:", newLocation);
     return newLocation;
+  } catch (error) {
+    console.error("Error inserting location:", error);
+    throw error;
   }
+}
 
   async updateLocation(id: number, location: Partial<InsertLocation>): Promise<Location | undefined> {
     const [updated] = await db.update(locations).set(location).where(eq(locations.id, id)).returning();
